@@ -21,10 +21,8 @@ EXPIRY_DATE = os.environ.get('EXPIRY_DATE',(datetime.now() + timedelta(days=365)
 
 
 def update_ro_keys():
-    # kid_data = open("/conf/stack/quay-readonly.kid").read()
-    # jwk_data = open("/conf/stack/quay-readonly.jwk").read()
-    kid_data = "test"
-    jwk_data = "test"
+    kid_data = open("/conf/stack/quay-readonly.kid").read()
+    jwk_data = open("/conf/stack/quay-readonly.pem").read()
     
     try:
         with conn.cursor() as cur:
