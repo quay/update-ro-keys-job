@@ -23,34 +23,49 @@ EXPIRY_DATE = os.environ.get('EXPIRY_DATE',(datetime.now() + timedelta(days=365)
 def update_ro_keys():
     kid_data = open("/conf/stack/quay-readonly.kid").read()
     jwk_data = open("/conf/stack/quay-readonly.pem").read()
+    # kid_data = "kid_data"
+    # jwk_data = "jwk_data"
     
     try:
         with conn.cursor() as cur:
             # Insert the key data
-            q = ("INSERT INTO servicekey "
-                 "(name, service, metadata, kid, jwk, expiration_date) "
-                'VALUES (%s, "quay", "{}", %s, %s, %s)')
-            cur.execute(q , (KEY_NAME, kid_data, jwk_data, EXPIRY_DATE))
-            conn.commit()
-            
             # Fetch the servickey id of the newly inserted key
             cur.execute("SELECT id from servicekey WHERE name=%s " , (KEY_NAME))
             servicekey = cur.fetchone()
-            print(servicekey)
-            servicekey_id = servicekey['id']
+ 
+            if servicekey:
+                # Update
+                q = ("UPDATE servicekey "
+                        "SET expiration_date=%s WHERE name=%s")
+                cur.execute(q, (EXPIRY_DATE, KEY_NAME))
+                conn.commit()
 
-            NOTES = 'Quay RO service key %s' % KEY_NAME
-            cur.execute("INSERT INTO servicekeyapproval (approval_type, notes) VALUES ('Super User API', %s)", (NOTES))
-            conn.commit()
+            else:
+                # New key 
+                q = ("INSERT INTO servicekey "
+                     "(name, service, metadata, kid, jwk, expiration_date) "
+                    'VALUES (%s, "quay", "{}", %s, %s, %s)')
+                cur.execute(q , (KEY_NAME, kid_data, jwk_data, EXPIRY_DATE))
+                conn.commit()
+                
+                # Fetch the servickey id of the newly inserted key
+                cur.execute("SELECT id from servicekey WHERE name=%s " , (KEY_NAME))
+                servicekey = cur.fetchone()
+                print(servicekey)
+                servicekey_id = servicekey['id']
 
-            # Fetch the approval id of the newly inserted key
-            cur.execute("SELECT id from servicekeyapproval WHERE notes=%s",  (NOTES))
-            approvalkey = cur.fetchone()
-            print(approvalkey)
-            approvalkey_id = approvalkey['id']
+                NOTES = 'Quay RO service key %s' % KEY_NAME
+                cur.execute("INSERT INTO servicekeyapproval (approval_type, notes) VALUES ('Super User API', %s)", (NOTES))
+                conn.commit()
 
-            cur.execute("""UPDATE servicekey set approval_id=%d where id=%d""" % (approvalkey_id, servicekey_id))
-            conn.commit()
+                # Fetch the approval id of the newly inserted key
+                cur.execute("SELECT id from servicekeyapproval WHERE notes=%s",  (NOTES))
+                approvalkey = cur.fetchone()
+                print(approvalkey)
+                approvalkey_id = approvalkey['id']
+
+                cur.execute("""UPDATE servicekey set approval_id=%d where id=%d""" % (approvalkey_id, servicekey_id))
+                conn.commit()
 
     except Exception as e:
         print(cur._last_executed)
