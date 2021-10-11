@@ -20,7 +20,7 @@ parameters:
   value: "quay.io/app-sre/quayio-update-ro-keys-job"
   required: true
 - name: IMAGE_TAG
-  value: ""
+  value: "latest"
   required: true
 - name: ACTIVE_DEADLINE_SECONDS
   value: "600"
