@@ -22,7 +22,7 @@ EXPIRY_DATE = os.environ.get('EXPIRY_DATE',(datetime.now() + timedelta(days=365)
 
 def update_ro_keys():
     kid_data = open("/conf/stack/quay-readonly.kid").read()
-    jwk_data = open("/conf/stack/quay-readonly.pem").read()
+    jwk_data = open("/conf/stack/quay-readonly.jwk").read()
     # kid_data = "kid_data"
     # jwk_data = "jwk_data"
     
