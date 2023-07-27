@@ -40,7 +40,7 @@ objects:
           app: quayio-update-ro-keys-${JOB_NAME}
       spec:
         activeDeadlineSeconds: ${{ACTIVE_DEADLINE_SECONDS}}
-        backoffLimit: 1
+        backoffLimit: 6
         completions: 1
         parallelism: 1
         restartPolicy: Never
