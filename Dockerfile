@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/python-39@sha256:6db74a276af9a6934a918b2c0117b74f185f3776882d5b7ae42e26128bfe13c9
+FROM registry.redhat.io/ubi8/python-39@sha256:519f2258d9475f881009a6da084de94a06dd822913bde3ec99225e502c8417c5
 
 RUN pip install pymysql
 
